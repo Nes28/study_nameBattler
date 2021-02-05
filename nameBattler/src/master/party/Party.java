@@ -91,6 +91,7 @@ public class Party {
 	 */
 	public void checkSomeoneIsDead() {
 		for (int i = 0; i < members.size(); i++) {
+		//for (int i = members.size()-1; i > 0; i--) {
 			Player p = members.get(i);
 			if (p.isDead()) {
 				RemovePlayer(p);

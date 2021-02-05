@@ -1,14 +1,14 @@
 package master.party;
-
+import master.config.PartyType;
+import master.job.Player;
 public interface PartyManagerInterface {
+	//getter
+	Player getPlayer(int i);
+	Party getParty(PartyType partyType);
 	int getAllPlayersSize();
+	//メソッド
 	void partySetup();
-	void collectPlayersOneParty();
-	void sortAgility();
-	void currentPlayerFindEnemy(int i);
-	void currentPlayerAction();
 	void printPartysStatus();
 	void checkSomeoneIsDead();
 	boolean whichPartyIsDead();
-	void gameOver();
 }

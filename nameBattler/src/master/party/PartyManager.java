@@ -1,69 +1,96 @@
 package master.party;
 
-public class PartyManager implements PartyManagerInterface {
+import master.GameStartSetting;
+import master.config.PartyType;
+import master.job.Player;
+import master.util.Console;
 
-	public PartyManager() {
-		// TODO 自動生成されたコンストラクター・スタブ
+public class PartyManager implements PartyManagerInterface {
+	Console con = new Console();
+	private Party allPlayers = new Party(PartyType.ALLPLAYERS);
+	private Party heroParty = new Party(PartyType.HEROES);
+	private Party evilParty = new Party(PartyType.EVILS);
+	
+	@Override
+	public Player getPlayer(int i) {
+		return allPlayers.getPlayer(i);
+	}
+	
+	@Override
+	public Party getParty(PartyType partyType) {
+		switch(partyType) {
+		case HEROES:
+			return heroParty;
+			
+		case EVILS:
+			return evilParty;
+		
+		case ALLPLAYERS:
+			return allPlayers;
+		
+		default :
+			return null;
+		}
 	}
 
 	@Override
 	public int getAllPlayersSize() {
-		// TODO 自動生成されたメソッド・スタブ
-		return 0;
+		return allPlayers.getMemberSize();
 	}
 
 	@Override
 	public void partySetup() {
-		// TODO 自動生成されたメソッド・スタブ
-
+		allocatePartys();
+		collectPlayersOneParty();
+		sortAgility();
+	}
+	
+	private void allocatePartys() {
+		final int playersNum = 6;
+		for (int i = 1; i < (playersNum + 1); i++) {
+			GameStartSetting gameStartSetting = new GameStartSetting();
+			Player newPlayer = gameStartSetting.generatePlayer(i);
+			//奇数番は英雄へ、偶数番は悪人パーティーへ加える
+			if (i % 2 == 1) {
+				heroParty.AppendPlayer(newPlayer);
+			} else {
+				evilParty.AppendPlayer(newPlayer);
+			}
+		}
 	}
 
-	@Override
-	public void collectPlayersOneParty() {
-		// TODO 自動生成されたメソッド・スタブ
-
+	private void collectPlayersOneParty() {
+		for (int j = 0; j < 3; j++) {
+			Player p = heroParty.getPlayer(j);
+			allPlayers.AppendPlayer(p);
+			p = evilParty.getPlayer(j);
+			allPlayers.AppendPlayer(p);
+		}
 	}
 
-	@Override
-	public void sortAgility() {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	@Override
-	public void currentPlayerFindEnemy(int i) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	@Override
-	public void currentPlayerAction() {
-		// TODO 自動生成されたメソッド・スタブ
-
+	private void sortAgility() {
+		allPlayers.sortAgi();
 	}
 
 	@Override
 	public void printPartysStatus() {
-		// TODO 自動生成されたメソッド・スタブ
-
+		con.out();
+		heroParty.printPartyStatus();
+		evilParty.printPartyStatus();
 	}
 
 	@Override
 	public void checkSomeoneIsDead() {
-		// TODO 自動生成されたメソッド・スタブ
-
+		allPlayers.checkSomeoneIsDead();
+		heroParty.checkSomeoneIsDead();
+		evilParty.checkSomeoneIsDead();
 	}
 
 	@Override
 	public boolean whichPartyIsDead() {
-		// TODO 自動生成されたメソッド・スタブ
+		if (heroParty.isAllDead() || evilParty.isAllDead()) {
+			return true;
+		}
 		return false;
 	}
-
-	@Override
-	public void gameOver() {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
 }

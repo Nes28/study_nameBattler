@@ -19,7 +19,7 @@ public class Console {
 	 * @param mess 表示するメッセージ
 	 */
 	public void typewriter(String mess) {
-		this.typewriter(mess, 20);
+		this.typewriter(mess, 10);
 	}
 
 	/**
