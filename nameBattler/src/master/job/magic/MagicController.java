@@ -1,11 +1,11 @@
-package master.magic;
+package master.job.magic;
 import master.job.Player;
-import master.magic.detail.Fire;
-import master.magic.detail.Heal;
-import master.magic.detail.Paralize;
-import master.magic.detail.Poison;
-import master.magic.detail.Thunder;
-public class CommonMagic implements MagicController {
+import master.job.magic.detail.Fire;
+import master.job.magic.detail.Heal;
+import master.job.magic.detail.Paralize;
+import master.job.magic.detail.Poison;
+import master.job.magic.detail.Thunder;
+public class MagicController implements IMagicController {
 	Fire fire = new Fire();
 	Thunder thunder = new Thunder();
 	Heal heal = new Heal();

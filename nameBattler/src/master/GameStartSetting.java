@@ -61,7 +61,7 @@ public class GameStartSetting {
 	private String decidePlayerName(int i) {
 		String mess = String.format("プレイヤー%dの名前を入力してください : ", i);
 		con.typewriter(mess);
-		return "【Player"+ i + "】" ;
+		return "【プレイヤー"+ i + "】" ;
 		//↓手動にする場合
 		//return scanner.next();
 	}

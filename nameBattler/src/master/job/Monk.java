@@ -1,5 +1,6 @@
 package master.job;
 
+import master.party.IPartyManager;
 import master.util.Console;
 
 public class Monk extends Player {
@@ -34,7 +35,7 @@ public class Monk extends Player {
 	 * @param defender : 対象プレイヤー
 	 */
 	@Override
-	public void attack(Player defender) {
+	public void attack(Player defender, IPartyManager partyManager) {
 		if(!isEndurance) {
 			activeEndurance();
 			return;

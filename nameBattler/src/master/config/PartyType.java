@@ -13,4 +13,13 @@ public enum PartyType {
 	public String getName() {
 		return this.name;
 	}
+	
+	public static PartyType getByName(String name) {
+		for(PartyType pt : PartyType.values()) {
+			if(pt.getName().equals(name)) {
+				return pt;	
+			}
+		}
+		return null;
+	}
 }

@@ -1,6 +1,7 @@
 package master.util;
 
 public class Console {
+	private final int messageSpeed = 10;
 
 	public void out(String s) {
 		System.out.println(s);
@@ -15,11 +16,11 @@ public class Console {
 	}
 
 	/**
-	 * 固定時間でメッセージ表示
+	 * 固定速度でメッセージ表示
 	 * @param mess 表示するメッセージ
 	 */
 	public void typewriter(String mess) {
-		this.typewriter(mess, 10);
+		this.typewriter(mess, messageSpeed);
 	}
 
 	/**
@@ -30,6 +31,14 @@ public class Console {
 	public void typewriter(String mess, int speed) {
 		this.typewriterNoLn(mess, speed);
 		this.out();
+	}
+
+	/**
+	 * 固定速度でメッセージ表示(改行なし）
+	 * @param mess　表示するメッセージ
+	 */
+	public void typewriterNoLn(String mess) {
+		typewriterNoLn(mess, messageSpeed);
 	}
 
 	/**

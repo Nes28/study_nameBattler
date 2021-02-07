@@ -1,12 +1,12 @@
 package master;
 
 import master.party.PartyManager;
-import master.party.PartyManagerInterface;
+import master.party.IPartyManager;
 import master.util.Console;
 
 public class GameManager {
 	Console con = new Console();
-	PartyManagerInterface partyManager = new PartyManager();
+	IPartyManager partyManager = new PartyManager();
 	
 	public void init() {
 		con.typewriter(" ネームバトラー   スタート！！   ", 40);
@@ -21,7 +21,7 @@ public class GameManager {
 			con.typewriter("--------------------------------");
 			con.typewriter(String.format("- ターン%d -", turnNumber));
 			
-			BattleManagerInterface battleManager = new BattleManager();
+			IBattleManager battleManager = new BattleManager();
 			battleManager.actionOneTurn(partyManager);
 			
 			//全滅しているかの判定

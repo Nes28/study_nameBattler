@@ -2,15 +2,15 @@ package master;
 import master.config.PartyType;
 import master.job.Player;
 import master.party.Party;
-import master.party.PartyManagerInterface;
+import master.party.IPartyManager;
 import master.strategy.DecideLowHpTarget;
 import master.strategy.TargetController;
 import master.util.Console;
-public class BattleManager implements BattleManagerInterface {
+public class BattleManager implements IBattleManager {
 	Console con = new Console();
 	
 	@Override
-	public void actionOneTurn(PartyManagerInterface partyManager) {
+	public void actionOneTurn(IPartyManager partyManager) {
 		for (int i = partyManager.getAllPlayersSize() - 1; i >= 0; i--) {
 			currentPlayerAction(i, partyManager);
 			//死人がいたら離脱させる
@@ -22,7 +22,13 @@ public class BattleManager implements BattleManagerInterface {
 		}
 	}
 	
-	private Player findTargetPlayer(int i, PartyManagerInterface partyManager) {
+	private void currentPlayerAction(int i,IPartyManager partyManager) {
+		Player currentPlayer = partyManager.getPlayer(i);
+		Player enemy = findTargetPlayer(i, partyManager);
+		currentPlayer.action(enemy, partyManager);
+	}
+	
+	private Player findTargetPlayer(int i, IPartyManager partyManager) {
 		Player currentPlayer = partyManager.getPlayer(i);
 		//TargetController targetController = new DecideRandomTarget();
 		TargetController targetController = new DecideLowHpTarget();
@@ -32,14 +38,8 @@ public class BattleManager implements BattleManagerInterface {
 		return targetPlayer;
 	}
 
-	//@Override
-	private void currentPlayerAction(int i,PartyManagerInterface partyManager) {
-		Player currentPlayer = partyManager.getPlayer(i);
-		currentPlayer.action(findTargetPlayer(i, partyManager));
-	}
-
 	@Override
-	public void gameOver(PartyManagerInterface partyManager) {
+	public void gameOver(IPartyManager partyManager) {
 		con.out();
 		Party heroParty = partyManager.getParty(PartyType.HEROES);
 		Party evilParty = partyManager.getParty(PartyType.EVILS);

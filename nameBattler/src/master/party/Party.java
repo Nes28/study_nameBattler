@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import master.config.PartyType;
 import master.job.Player;
-import master.job.PlayerComparator;
 import master.util.Console;
 
 public class Party {
@@ -78,7 +77,7 @@ public class Party {
 	 * 速度順に並べる
 	 */
 	public void sortAgi() {
-		Collections.sort(members, new PlayerComparator());
+		Collections.sort(members, (p1, p2) -> p1.getAGI() - p2.getAGI());
 		System.out.println("--速度順に並び直しました--");
 		for (int i = members.size() - 1; i >= 0; i--) {
 			Player p = members.get(i);

@@ -1,6 +1,6 @@
-package master.magic;
+package master.job.magic;
 import master.job.Player;
-public interface MagicController {
+public interface IMagicController {
 	int useFire(Player attacker);
 	int useThunder(Player attacker);
 	void useHeal(Player me, Player player);

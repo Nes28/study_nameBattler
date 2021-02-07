@@ -1,7 +1,13 @@
 package master.job;
-import master.magic.CommonMagic;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+import master.job.magic.MagicController;
+import master.party.IPartyManager;
+
 public class Priest extends Player {
-	CommonMagic commonMagic = new CommonMagic();
+	MagicController commonMagic = new MagicController();
 
 	public Priest(String name) {
 		super(name);
@@ -28,10 +34,10 @@ public class Priest extends Player {
 	 * @param defender : 対象プレイヤー
 	 */
 	@Override
-	public void attack(Player defender) {
-		//HPが減少していたら回復
-		if (hasLowHP() && hasEnoughMP(20)) {
-			commonMagic.useHeal(this, this);
+	public void attack(Player defender, IPartyManager partyManager) {
+		//味方が死にかけなら回復
+		if (existDyingMember(partyManager) && hasEnoughMP(20)) {
+			commonMagic.useHeal(this, findWorstHpMember(partyManager));
 			return;
 		}
 
@@ -42,7 +48,7 @@ public class Priest extends Player {
 		}
 
 		//相手が毒じゃなかったら
-		if(!defender.isPoison) {
+		if (!defender.isPoison) {
 			commonMagic.usePoison(this, defender);
 			return;
 		}
@@ -66,11 +72,29 @@ public class Priest extends Player {
 	}
 
 	/**
-	 * HPの状態
-	 * @return 最大値の半分以下ならtrue
+	 * HP半分以下のメンバーがいるかどうか
+	 * @param partyManager
+	 * @return HP半分以下のメンバーがいたらtrue
 	 */
-	private boolean hasLowHP() {
-		return this.getHP() <= (this.getMaxHP() / 2);
+	private boolean existDyingMember(IPartyManager partyManager) {
+		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
+		for (int i = 0; i < myMembers.size(); i++) {
+			Player p =myMembers.get(i);
+			if(p.getHP() <= (p.getMaxHP()/2)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
+	/**
+	 * 最もHPの低い味方を探す
+	 * @param partyManager
+	 * @return 最もHPの低いPlayer
+	 */
+	private Player findWorstHpMember(IPartyManager partyManager) {
+		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
+		Collections.sort(myMembers, (p1, p2) -> p1.getHP() - p2.getHP());
+		return myMembers.get(0);
+	}
 }

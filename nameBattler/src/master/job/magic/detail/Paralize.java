@@ -1,4 +1,4 @@
-package master.magic.detail;
+package master.job.magic.detail;
 
 import master.config.MagicType;
 import master.job.Player;
@@ -9,7 +9,7 @@ public class Paralize {
 	MagicType paralize = MagicType.PARALIZE;
 
 	public void useMagic(Player me, Player defender) {
-		con.typewriter(me.getName() + "は" + paralize.getName() + "を唱えた!  " + defender.getName() + "は麻痺状態になった");
+		con.typewriter(me.getName() + "は" + paralize.getName() + "を唱えた!!" + defender.getName() + "は麻痺状態になった");
 		defender.setParalize();
 		me.consumeMP(paralize.getMp());
 	}

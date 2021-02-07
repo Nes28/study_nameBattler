@@ -1,5 +1,5 @@
-package master.magic;
+package master.job.magic;
 import master.job.Player;
-public interface DamageMagicType {
+public interface IDamageMagic {
 	int useMagic(Player attacker);
 }

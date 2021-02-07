@@ -1,4 +1,4 @@
-package master.magic.detail;
+package master.job.magic.detail;
 
 import master.config.MagicType;
 import master.job.Player;
@@ -10,7 +10,7 @@ public class Heal {
 	Console con = new Console();
 
 	public void useMagic(Player me, Player player) {
-		con.typewriter(me.getName() + "は" + heal.getName() + "を唱えた!");
+		con.typewriterNoLn(me.getName() + "は" + heal.getName() + "を唱えた!!");
 		me.consumeMP(heal.getMp());
 		player.isHealedHp(healPoint);
 	}

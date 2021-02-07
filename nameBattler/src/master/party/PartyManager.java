@@ -5,7 +5,7 @@ import master.config.PartyType;
 import master.job.Player;
 import master.util.Console;
 
-public class PartyManager implements PartyManagerInterface {
+public class PartyManager implements IPartyManager {
 	Console con = new Console();
 	private Party allPlayers = new Party(PartyType.ALLPLAYERS);
 	private Party heroParty = new Party(PartyType.HEROES);

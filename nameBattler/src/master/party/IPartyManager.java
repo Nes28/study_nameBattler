@@ -1,7 +1,7 @@
 package master.party;
 import master.config.PartyType;
 import master.job.Player;
-public interface PartyManagerInterface {
+public interface IPartyManager {
 	//getter
 	Player getPlayer(int i);
 	Party getParty(PartyType partyType);

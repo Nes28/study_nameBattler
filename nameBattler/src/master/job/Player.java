@@ -2,8 +2,12 @@ package master.job;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Random;
 
+import master.config.PartyType;
+import master.party.IPartyManager;
+import master.party.Party;
 import master.util.Console;
 //
 
@@ -74,6 +78,11 @@ public class Player {
 
 	public String getBelongPartyName() {
 		return this.belongPartyName;
+	}
+
+	public ArrayList<Player> getMyMembers(IPartyManager partyManager){
+		Party myParty = partyManager.getParty(PartyType.getByName(this.getBelongPartyName()));
+		return myParty.getMembers();
 	}
 
 	/**
@@ -149,8 +158,9 @@ public class Player {
 	/**
 	 * 対象プレイヤーに攻撃を行う
 	 * @param defender : 対象プレイヤー
+	 * @param partyManager TODO
 	 */
-	protected void attack(Player defender) {
+	protected void attack(Player defender, IPartyManager partyManager) {
 		// ジョブごとにオーバーライドして処理を記述してください
 	}
 
@@ -225,8 +235,8 @@ public class Player {
 	 * 現在のステータスを System.out で表示する
 	 */
 	public void PrintStatus() {
-		String mess = String.format("%s (HP=%3d MP=%3d )\n",
-				this.getName(), this.getHP(), this.getMP());
+		String mess = String.format("%s (HP=%3d/%3d MP=%3d )\n",
+				this.getName(), this.getHP(),this.getMaxHP(), this.getMP());
 		con.typewriterNoLn(mess, 10);
 	}
 
@@ -241,7 +251,7 @@ public class Player {
 	 * 状態異常確認と攻撃
 	 * @param defender
 	 */
-	public void action(Player defender) {
+	public void action(Player defender, IPartyManager partyManager) {
 		activePoison();
 		String mess;
 		if (isDead()) {
@@ -254,7 +264,7 @@ public class Player {
 			con.typewriter(mess);
 			return;
 		}
-		attack(defender);
+		attack(defender, partyManager);
 	}
 
 	/**
