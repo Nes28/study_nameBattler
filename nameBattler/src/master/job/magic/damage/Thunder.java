@@ -1,13 +1,12 @@
-package master.job.magic.detail;
+package master.job.magic.damage;
 
 import java.util.Random;
 
 import master.config.MagicType;
 import master.job.Player;
-import master.job.magic.IDamageMagic;
 import master.util.Console;
-public class Fire implements IDamageMagic{
-	MagicType fire = MagicType.FIRE;
+public class Thunder implements IDamageMagic {
+	MagicType thunder = MagicType.THUNDER;
 	private int minDamage = 10;
 	private int maxDamage = 30;
 	Console con = new Console();
@@ -15,10 +14,9 @@ public class Fire implements IDamageMagic{
 
 	@Override
 	public int useMagic(Player attacker) {
-		con.typewriterNoLn(fire.getName() + "を唱えた!", 20);
+		con.typewriterNoLn(thunder.getName() + "を唱えた!", 20);
 		int damage = rnd.nextInt(maxDamage - minDamage + 1) + (minDamage);
-		attacker.consumeMP(fire.getMp());
+		attacker.consumeMP(thunder.getMp());
 		return damage;
 	}
-
 }

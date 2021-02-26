@@ -6,7 +6,7 @@ import java.util.Collections;
 import master.job.Player;
 import master.party.Party;
 
-public class DecideLowHpTarget implements TargetController {
+public class DecideLowHpTarget implements ITargetPicker {
 
 	/**
 	 * 低HPを狙う

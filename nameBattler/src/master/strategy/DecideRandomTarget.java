@@ -4,7 +4,7 @@ import java.util.Random;
 
 import master.job.Player;
 import master.party.Party;
-public class DecideRandomTarget implements TargetController {
+public class DecideRandomTarget implements ITargetPicker {
 	Random rnd = new Random();
 	public DecideRandomTarget() {
 		

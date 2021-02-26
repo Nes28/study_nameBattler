@@ -1,5 +1,5 @@
 package master.job;
-import master.party.IPartyManager;
+import master.party.PartyManager;
 import master.util.Console;
 // プレイヤー：戦士
 public class Fighter extends Player {
@@ -31,7 +31,7 @@ public class Fighter extends Player {
 	 * @param defender : 対象プレイヤー
 	 */
 	@Override
-	public void attack(Player defender, IPartyManager partyManager) {
+	public void attack(Player defender, PartyManager partyManager) {
 		// 与えるダメージを求める
 		con.typewriterNoLn(getName() + "の攻撃！", 20);
 		int damage = calcDamage(defender);

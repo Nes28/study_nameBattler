@@ -1,4 +1,4 @@
-package master.job.magic.detail;
+package master.job.magic.debuff;
 
 import master.config.MagicType;
 import master.job.Player;

@@ -11,12 +11,12 @@ import master.job.Priest;
 import master.job.Wizard;
 import master.util.Console;
 
-public class GameStartSetting {
+public class PlayerGenerator {
 	Console con = new Console();
 	Random rnd = new Random();
 	Scanner scanner = new Scanner(System.in);
 
-	public GameStartSetting() {
+	public PlayerGenerator() {
 
 	}
 

@@ -1,22 +1,20 @@
 package master.party;
 
-import master.GameStartSetting;
+import master.PlayerGenerator;
 import master.config.PartyType;
 import master.job.Player;
 import master.util.Console;
 
-public class PartyManager implements IPartyManager {
+public class PartyManager{
 	Console con = new Console();
-	private Party allPlayers = new Party(PartyType.ALLPLAYERS);
+	private Party allPlayers = new Party(PartyType.UNKNOWN);
 	private Party heroParty = new Party(PartyType.HEROES);
 	private Party evilParty = new Party(PartyType.EVILS);
 	
-	@Override
 	public Player getPlayer(int i) {
 		return allPlayers.getPlayer(i);
 	}
 	
-	@Override
 	public Party getParty(PartyType partyType) {
 		switch(partyType) {
 		case HEROES:
@@ -25,20 +23,16 @@ public class PartyManager implements IPartyManager {
 		case EVILS:
 			return evilParty;
 		
-		case ALLPLAYERS:
-			return allPlayers;
-		
+		case UNKNOWN:	//デフォルトにフォールスルー
 		default :
 			return null;
 		}
 	}
 
-	@Override
 	public int getAllPlayersSize() {
 		return allPlayers.getMemberSize();
 	}
 
-	@Override
 	public void partySetup() {
 		allocatePartys();
 		collectPlayersOneParty();
@@ -48,7 +42,7 @@ public class PartyManager implements IPartyManager {
 	private void allocatePartys() {
 		final int playersNum = 6;
 		for (int i = 1; i < (playersNum + 1); i++) {
-			GameStartSetting gameStartSetting = new GameStartSetting();
+			PlayerGenerator gameStartSetting = new PlayerGenerator();
 			Player newPlayer = gameStartSetting.generatePlayer(i);
 			//奇数番は英雄へ、偶数番は悪人パーティーへ加える
 			if (i % 2 == 1) {
@@ -72,21 +66,18 @@ public class PartyManager implements IPartyManager {
 		allPlayers.sortAgi();
 	}
 
-	@Override
 	public void printPartysStatus() {
 		con.out();
 		heroParty.printPartyStatus();
 		evilParty.printPartyStatus();
 	}
 
-	@Override
 	public void checkSomeoneIsDead() {
 		allPlayers.checkSomeoneIsDead();
 		heroParty.checkSomeoneIsDead();
 		evilParty.checkSomeoneIsDead();
 	}
 
-	@Override
 	public boolean whichPartyIsDead() {
 		if (heroParty.isAllDead() || evilParty.isAllDead()) {
 			return true;

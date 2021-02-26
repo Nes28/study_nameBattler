@@ -3,7 +3,7 @@ package master.config;
 public enum PartyType {
 	HEROES("英雄チーム"),
 	EVILS("悪人チーム"),
-	ALLPLAYERS("全プレイヤー");
+	UNKNOWN("不明チーム");	//swichのぬるぽ回避
 
 	String name;
 	PartyType(String name){

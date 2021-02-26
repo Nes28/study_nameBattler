@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import master.config.PartyType;
-import master.party.IPartyManager;
 import master.party.Party;
+import master.party.PartyManager;
 import master.util.Console;
 //
 
@@ -80,7 +80,7 @@ public class Player {
 		return this.belongPartyName;
 	}
 
-	public ArrayList<Player> getMyMembers(IPartyManager partyManager){
+	public ArrayList<Player> getMyMembers(PartyManager partyManager){
 		Party myParty = partyManager.getParty(PartyType.getByName(this.getBelongPartyName()));
 		return myParty.getMembers();
 	}
@@ -160,7 +160,7 @@ public class Player {
 	 * @param defender : 対象プレイヤー
 	 * @param partyManager TODO
 	 */
-	protected void attack(Player defender, IPartyManager partyManager) {
+	protected void attack(Player defender, PartyManager partyManager) {
 		// ジョブごとにオーバーライドして処理を記述してください
 	}
 
@@ -251,7 +251,7 @@ public class Player {
 	 * 状態異常確認と攻撃
 	 * @param defender
 	 */
-	public void action(Player defender, IPartyManager partyManager) {
+	public void action(Player defender, PartyManager partyManager) {
 		activePoison();
 		String mess;
 		if (isDead()) {

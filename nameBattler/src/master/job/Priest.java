@@ -3,11 +3,11 @@ package master.job;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import master.job.magic.MagicController;
-import master.party.IPartyManager;
+import master.job.magic.CommonMagic;
+import master.party.PartyManager;
 
 public class Priest extends Player {
-	MagicController commonMagic = new MagicController();
+	CommonMagic commonMagic = new CommonMagic();
 
 	public Priest(String name) {
 		super(name);
@@ -34,7 +34,7 @@ public class Priest extends Player {
 	 * @param defender : 対象プレイヤー
 	 */
 	@Override
-	public void attack(Player defender, IPartyManager partyManager) {
+	public void attack(Player defender, PartyManager partyManager) {
 		//味方が死にかけなら回復
 		if (existDyingMember(partyManager) && hasEnoughMP(20)) {
 			commonMagic.useHeal(this, findWorstHpMember(partyManager));
@@ -76,7 +76,7 @@ public class Priest extends Player {
 	 * @param partyManager
 	 * @return HP半分以下のメンバーがいたらtrue
 	 */
-	private boolean existDyingMember(IPartyManager partyManager) {
+	private boolean existDyingMember(PartyManager partyManager) {
 		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
 		for (int i = 0; i < myMembers.size(); i++) {
 			Player p =myMembers.get(i);
@@ -92,7 +92,7 @@ public class Priest extends Player {
 	 * @param partyManager
 	 * @return 最もHPの低いPlayer
 	 */
-	private Player findWorstHpMember(IPartyManager partyManager) {
+	private Player findWorstHpMember(PartyManager partyManager) {
 		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
 		Collections.sort(myMembers, (p1, p2) -> p1.getHP() - p2.getHP());
 		return myMembers.get(0);

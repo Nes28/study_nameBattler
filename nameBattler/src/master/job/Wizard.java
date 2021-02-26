@@ -1,9 +1,9 @@
 package master.job;
 
-import master.job.magic.MagicController;
-import master.party.IPartyManager;
+import master.job.magic.CommonMagic;
+import master.party.PartyManager;
 public class Wizard extends Player {
-	MagicController commonMagic = new MagicController();
+	CommonMagic commonMagic = new CommonMagic();
 
 	public Wizard(String name) {
 		super(name);
@@ -26,7 +26,7 @@ public class Wizard extends Player {
 	}
 
 	@Override
-	public void attack(Player defender, IPartyManager partyManager) {
+	public void attack(Player defender, PartyManager partyManager) {
 		// 与えるダメージを求める
 		con.typewriterNoLn(getName() + "の攻撃！", 20);
 		int damage;

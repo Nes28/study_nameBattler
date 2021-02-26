@@ -6,7 +6,7 @@ public class NameBattler {
 		// ==================================================
 		// バトル開始準備
 		// ==================================================
-		GameManager controller = new GameManager();
+		GameProgress controller = new GameProgress();
 		
 		controller.init();
 		controller.battle();
