@@ -10,7 +10,7 @@ public class Paralize {
 
 	public void useMagic(Player me, Player defender) {
 		con.typewriter(me.getName() + "は" + paralize.getName() + "を唱えた!!" + defender.getName() + "は麻痺状態になった");
-		defender.setParalize();
+		defender.becomeParalize();
 		me.consumeMP(paralize.getMp());
 	}
 }

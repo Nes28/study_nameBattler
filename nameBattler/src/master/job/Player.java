@@ -12,7 +12,7 @@ import master.util.Console;
 //
 
 // プレイヤークラス(各種ジョブの基底クラス)
-public class Player {
+public abstract class Player {
 	Console con = new Console();
 	// =======================
 	// フィールド変数
@@ -36,8 +36,6 @@ public class Player {
 	 */
 	public Player(String name) {
 		this.name = name;
-
-		// キャラクターのパラメータ生成
 		makeCharacter();
 	}
 
@@ -99,9 +97,7 @@ public class Player {
 	/**
 	 * 名前(name)からキャラクターに必要なパラメータを生成する
 	 */
-	protected void makeCharacter() {
-		// ジョブごとにオーバーライドして処理を記述してください
-	}
+	protected abstract void makeCharacter();
 
 	/**
 	 * 名前(name)からハッシュ値を生成し、指定された位置の数値を取り出す
@@ -151,7 +147,6 @@ public class Player {
 	 * @param damage : ダメージ値
 	 */
 	protected void damage(int damage) {
-		// ダメージ値分、HPを減少させる
 		this.hp = Math.max(this.getHP() - damage, 0);
 	}
 
@@ -160,9 +155,7 @@ public class Player {
 	 * @param defender : 対象プレイヤー
 	 * @param partyManager TODO
 	 */
-	protected void attack(Player defender, PartyManager partyManager) {
-		// ジョブごとにオーバーライドして処理を記述してください
-	}
+	protected abstract void attack(Player defender, PartyManager partyManager);
 
 	/**
 	 * 必要なMPがあるかの判定
@@ -253,15 +246,12 @@ public class Player {
 	 */
 	public void action(Player defender, PartyManager partyManager) {
 		activePoison();
-		String mess;
 		if (isDead()) {
-			mess = String.format("%sは毒で死んでしまった", getName());
-			con.typewriter(mess);
+			con.typewriter(this.getName() + "は毒で死んでしまった");
 			return;
 		}
 		if (activeParalize()) {
-			mess = String.format("%sは麻痺で体が動かない・・・", this.getName());
-			con.typewriter(mess);
+			con.typewriter(this.getName() + "は麻痺で体が動かない・・・");
 			return;
 		}
 		attack(defender, partyManager);
@@ -296,14 +286,14 @@ public class Player {
 	/**
 	 * 麻痺状態になる
 	 */
-	public void setParalize() {
+	public void becomeParalize() {
 		this.isParalize = true;
 	}
 
 	/**
 	 * 毒状態になる
 	 */
-	public void setPoison() {
+	public void becomePoison() {
 		this.isPoison = true;
 	}
 }

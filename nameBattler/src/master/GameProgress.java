@@ -1,5 +1,7 @@
 package master;
 
+import master.config.PartyType;
+import master.party.Party;
 import master.party.PartyManager;
 import master.util.Console;
 
@@ -37,7 +39,19 @@ public class GameProgress {
 	}
 
 	public void gameover() {
-		Battle battle = new Battle();
-		battle.gameOver(partyManager);
+//		Battle battle = new Battle();
+//		battle.gameOver(partyManager);
+		con.out();
+		Party heroParty = partyManager.getParty(PartyType.HEROES);
+		Party evilParty = partyManager.getParty(PartyType.EVILS);
+		if (heroParty.getMemberSize() > evilParty.getMemberSize()) {
+			con.typewriter(heroParty.getPartyName() + "の勝利！！");
+		}
+		if (heroParty.getMemberSize() < evilParty.getMemberSize()) {
+			con.typewriter(evilParty.getPartyName() + "の勝利！！");
+		}
+		if (heroParty.getMemberSize() == evilParty.getMemberSize()) {
+			con.typewriter("引き分け");
+		}
 	}
 }

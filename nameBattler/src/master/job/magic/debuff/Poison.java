@@ -10,7 +10,7 @@ public class Poison {
 
 	public void useMagic(Player me, Player defender) {
 		con.typewriter(me.getName() + "は" + poison.getName() + "を唱えた!!" + defender.getName() + "は毒状態になった");
-		defender.setPoison();
+		defender.becomePoison();
 		me.consumeMP(poison.getMp());
 	}
 }

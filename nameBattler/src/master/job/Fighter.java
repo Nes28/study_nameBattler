@@ -16,7 +16,6 @@ public class Fighter extends Player {
 	 */
 	@Override
 	protected void makeCharacter() {
-		// 戦士のパラメータを名前から生成する
 		this.hp = getNumber(0, 100) * 3; //100 ~ 300
 		this.maxHp = this.hp;
 		this.mp = 0; //0

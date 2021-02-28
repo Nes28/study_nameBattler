@@ -11,8 +11,8 @@ public class PartyManager{
 	private Party heroParty = new Party(PartyType.HEROES);
 	private Party evilParty = new Party(PartyType.EVILS);
 	
-	public Player getPlayer(int i) {
-		return allPlayers.getPlayer(i);
+	public Player getPlayer(int index) {
+		return allPlayers.getPlayer(index);
 	}
 	
 	public Party getParty(PartyType partyType) {

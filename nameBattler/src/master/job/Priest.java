@@ -42,13 +42,13 @@ public class Priest extends Player {
 		}
 
 		//相手が麻痺していなかったら
-		if (!defender.isParalize) {
+		if (!defender.isParalize && hasEnoughMP(10)) {
 			commonMagic.useParalize(this, defender);
 			return;
 		}
 
 		//相手が毒じゃなかったら
-		if (!defender.isPoison) {
+		if (!defender.isPoison && hasEnoughMP(10)) {
 			commonMagic.usePoison(this, defender);
 			return;
 		}
@@ -79,8 +79,8 @@ public class Priest extends Player {
 	private boolean existDyingMember(PartyManager partyManager) {
 		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
 		for (int i = 0; i < myMembers.size(); i++) {
-			Player p =myMembers.get(i);
-			if(p.getHP() <= (p.getMaxHP()/2)) {
+			Player p = myMembers.get(i);
+			if (p.getHP() <= (p.getMaxHP() / 2)) {
 				return true;
 			}
 		}
