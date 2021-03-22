@@ -8,7 +8,7 @@ import master.util.Console;
 public class GameProgress {
 	Console con = new Console();
 	PartyManager partyManager = new PartyManager();
-	
+
 	public void init() {
 		con.typewriter(" ネームバトラー   スタート！！   ", 40);
 		partyManager.partySetup();
@@ -21,10 +21,10 @@ public class GameProgress {
 		while (turnNumber <= 20) {
 			con.typewriter("--------------------------------");
 			con.typewriter(String.format("- ターン%d -", turnNumber));
-			
+
 			Battle battle = new Battle();
 			battle.actionOneTurn(partyManager);
-			
+
 			//全滅しているかの判定
 			if (partyManager.whichPartyIsDead()) {
 				con.typewriter("パーティーが全滅した");
@@ -39,8 +39,6 @@ public class GameProgress {
 	}
 
 	public void gameover() {
-//		Battle battle = new Battle();
-//		battle.gameOver(partyManager);
 		con.out();
 		Party heroParty = partyManager.getParty(PartyType.HEROES);
 		Party evilParty = partyManager.getParty(PartyType.EVILS);

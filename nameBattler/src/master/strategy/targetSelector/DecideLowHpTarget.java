@@ -1,4 +1,4 @@
-package master.strategy;
+package master.strategy.targetSelector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.Collections;
 import master.job.Player;
 import master.party.Party;
 
-public class DecideLowHpTarget implements ITargetPicker {
+public class DecideLowHpTarget implements ITargetSelector {
 
 	/**
 	 * 低HPを狙う

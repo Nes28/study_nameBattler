@@ -3,18 +3,27 @@ package master.job;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import master.config.JobType;
 import master.job.magic.CommonMagic;
+import master.job.magic.MagicSet;
+import master.party.Party;
 import master.party.PartyManager;
-
-public class Priest extends Player {
+import master.strategy.ActionStrategy;
+import master.strategy.DoVarious;
+public class Priest extends Player implements IPlayerAction{
 	CommonMagic commonMagic = new CommonMagic();
 
 	public Priest(String name) {
 		super(name);
-		con.typewriter(String.format("%sは僧侶です", name));
-		con.typewriter("---------------------------------");
 	}
-
+	@Override
+	protected void setJobType() {
+		jobType = JobType.PRIEST;
+	}
+	@Override
+	protected void setMagicSet() {
+		magicSet = new MagicSet(jobType);
+	}
 	/**
 	 * 名前からパラメーターを設定
 	 */
@@ -29,46 +38,48 @@ public class Priest extends Player {
 		this.agi = getNumber(5, 40) + 20; //20 ~ 60
 	}
 
-	/**
-	 * 対象プレイヤーに攻撃を行う
-	 * @param defender : 対象プレイヤー
-	 */
+	
 	@Override
-	public void attack(Player defender, PartyManager partyManager) {
-		//味方が死にかけなら回復
-		if (existDyingMember(partyManager) && hasEnoughMP(20)) {
-			commonMagic.useHeal(this, findWorstHpMember(partyManager));
-			return;
-		}
+	public void attack(Party enemyParty,PartyManager currentPartyManager) {
+		ActionStrategy actionStrategy = new DoVarious(enemyParty);
+		actionStrategy.decideAction(this, currentPartyManager);
+	}
 
+	/**
+	 * 最もHPの低い味方を探す
+	 * @param partyManager
+	 * @return 最もHPの低いPlayer
+	 */
+	private Player findWorstHpMember(PartyManager partyManager) {
+		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
+		Collections.sort(myMembers, (p1, p2) -> p1.getHP() - p2.getHP());
+		return myMembers.get(0);
+	}
+	
+
+	@Override
+	public boolean healAction(PartyManager currentPartyManager) {
+		if (existDyingMember(currentPartyManager) && hasEnoughMP(20)) {
+			commonMagic.useHeal(this, findWorstHpMember(currentPartyManager));
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean debuffAction(Player enemy) {
 		//相手が麻痺していなかったら
-		if (!defender.isParalize && hasEnoughMP(10)) {
-			commonMagic.useParalize(this, defender);
-			return;
+		if (!enemy.isParalize && hasEnoughMP(10)) {
+			commonMagic.useParalize(this, enemy);
+			return true;
 		}
 
 		//相手が毒じゃなかったら
-		if (!defender.isPoison && hasEnoughMP(10)) {
-			commonMagic.usePoison(this, defender);
-			return;
+		if (!enemy.isPoison && hasEnoughMP(10)) {
+			commonMagic.usePoison(this, enemy);
+			return true;
 		}
-
-		// 与えるダメージを求める
-		con.typewriterNoLn(getName() + "の攻撃！", 20);
-		int damage = calcDamage(defender);
-
-		// 求めたダメージを対象プレイヤーに与える
-		if (damage > 0) {
-			con.typewriter(defender.getName() + "に" + damage + "のダメージ！");
-		} else {
-			con.typewriter("攻撃がミス");
-		}
-		defender.damage(damage);
-
-		// 倒れた判定
-		if (defender.isDead()) {
-			con.typewriter(defender.getName() + "は力尽きた...");
-		}
+		return false;
 	}
 
 	/**
@@ -85,16 +96,5 @@ public class Priest extends Player {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * 最もHPの低い味方を探す
-	 * @param partyManager
-	 * @return 最もHPの低いPlayer
-	 */
-	private Player findWorstHpMember(PartyManager partyManager) {
-		ArrayList<Player> myMembers = this.getMyMembers(partyManager);
-		Collections.sort(myMembers, (p1, p2) -> p1.getHP() - p2.getHP());
-		return myMembers.get(0);
 	}
 }

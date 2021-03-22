@@ -4,19 +4,18 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 
+import master.config.JobType;
 import master.config.PartyType;
+import master.job.magic.MagicSet;
 import master.party.Party;
 import master.party.PartyManager;
 import master.util.Console;
-//
-
 // プレイヤークラス(各種ジョブの基底クラス)
-public abstract class Player {
+public abstract class Player implements IPlayerAction {
 	Console con = new Console();
-	// =======================
-	// フィールド変数
-	// =======================
+	Random rnd = new Random();
 	protected String name; // 名前
 	protected int hp; //HP
 	protected int maxHp; //maxHP
@@ -28,15 +27,17 @@ public abstract class Player {
 	boolean isParalize = false; //麻痺状態
 	boolean isPoison = false; //毒状態
 	public String belongPartyName; //所属パーティー名
-	Random rnd = new Random();
+	
+	protected JobType jobType;
+	protected MagicSet magicSet;
 
-	/**
-	 * コンストラクタ
-	 * @param name : プレイヤー名
-	 */
 	public Player(String name) {
 		this.name = name;
-		makeCharacter();
+		this.setJobType();
+		this.setMagicSet();
+		this.makeCharacter();
+		con.typewriter(String.format("%sは%sです", name, jobType.getName()));
+		con.typewriter("---------------------------------");
 	}
 
 	// =======================
@@ -73,12 +74,24 @@ public abstract class Player {
 	public int getAGI() {
 		return this.agi;
 	}
+	
+	public JobType getJobType() {
+		return this.jobType;
+	}
+	
+	public MagicSet getMagicSet() {
+		return this.magicSet;
+	}
+	
+	public Set getMagicAttributes() {
+		return this.magicSet.getMagicAttributes();
+	}
 
 	public String getBelongPartyName() {
 		return this.belongPartyName;
 	}
 
-	public ArrayList<Player> getMyMembers(PartyManager partyManager){
+	public ArrayList<Player> getMyMembers(PartyManager partyManager) {
 		Party myParty = partyManager.getParty(PartyType.getByName(this.getBelongPartyName()));
 		return myParty.getMembers();
 	}
@@ -90,10 +103,9 @@ public abstract class Player {
 	public void setBelongPartyName(String partyName) {
 		this.belongPartyName = partyName;
 	}
-
-	// =======================
-	// protected メソッド
-	// =======================
+	
+	protected abstract void setJobType();
+	protected abstract void setMagicSet();
 	/**
 	 * 名前(name)からキャラクターに必要なパラメータを生成する
 	 */
@@ -125,11 +137,50 @@ public abstract class Player {
 	}
 
 	/**
-	 * 対象プレイヤー(target)に対して与えるダメージを計算する
+	 * 状態異常確認と攻撃
+	 * @param defender
+	 */
+	public void action(Party enemyParty, PartyManager currentPartyManager) {
+		this.activePoison();
+		if (isDead()) {
+			con.typewriter(this.getName() + "は毒で死んでしまった");
+			return;
+		}
+		if (activeParalize()) {
+			con.typewriter(this.getName() + "は麻痺で体が動かない・・・");
+			return;
+		}
+		this.attack(enemyParty, currentPartyManager);
+	}
+
+	public abstract void attack(Party enemyParty, PartyManager currentPartyManager);
+
+	@Override
+	public boolean normalAttack(Player enemy) {
+		int damage = calcNormalAttackDamage(enemy);
+		dealDamage(enemy, damage);
+		return true;
+	}
+
+	public boolean magicAttack(Player enemy) {
+		return false;
+	}
+
+	public boolean healAction(PartyManager currentPartyManager) {
+		return false;
+	}
+	
+	public boolean debuffAction(Player enemy) {
+		return false;
+	}
+
+	/**
+	 * ターゲットに与える通常ダメージ
 	 * @param target : 対象プレイヤー
 	 * @return ダメージ値(0～)
 	 */
-	protected int calcDamage(Player target) {
+	protected int calcNormalAttackDamage(Player target) {
+		con.typewriterNoLn(getName() + "の通常攻撃！");
 		int damage = getSTR() - target.getDEF();
 		//会心の一撃
 		if (isCriticalAttack()) {
@@ -142,21 +193,39 @@ public abstract class Player {
 		return damage;
 	}
 
+	private boolean isCriticalAttack() {
+		int criticalRate = rnd.nextInt(1000) + 1; //1 ~ 1000
+		if (criticalRate < getLUCK()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 敵にダメージを与える
+	 */
+	protected void dealDamage(Player enemy, int damage) {
+		if (damage > 0) {
+			con.typewriter(enemy.getName() + "に" + damage + "のダメージ！");
+		} else {
+			con.typewriter("攻撃がミス");
+		}
+		enemy.receiveDamage(damage);
+	}
+
 	/**
 	 * ダメージを受ける
 	 * @param damage : ダメージ値
 	 */
-	protected void damage(int damage) {
+	protected void receiveDamage(int damage) {
 		this.hp = Math.max(this.getHP() - damage, 0);
+		if (this.isDead()) {
+			con.typewriter(this.getName() + "は力尽きた...");
+		}
 	}
 
-	/**
-	 * 対象プレイヤーに攻撃を行う
-	 * @param defender : 対象プレイヤー
-	 * @param partyManager TODO
-	 */
-	protected abstract void attack(Player defender, PartyManager partyManager);
-
+	
 	/**
 	 * 必要なMPがあるかの判定
 	 * @param necessaryMP
@@ -177,18 +246,6 @@ public abstract class Player {
 		this.mp -= mpCost;
 		if (this.mp < 0) {
 			mp = 0;
-		}
-	}
-
-	// =======================
-	// private メソッド
-	// =======================
-	private boolean isCriticalAttack() {
-		int kakuritsu = rnd.nextInt(1000) + 1; //1 ~ 1000
-		if (kakuritsu < getLUCK()) {
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -221,15 +278,12 @@ public abstract class Player {
 		con.typewriter(mess);
 	}
 
-	// =======================
-	// public メソッド
-	// =======================
 	/**
 	 * 現在のステータスを System.out で表示する
 	 */
 	public void PrintStatus() {
 		String mess = String.format("%s (HP=%3d/%3d MP=%3d )\n",
-				this.getName(), this.getHP(),this.getMaxHP(), this.getMP());
+				this.getName(), this.getHP(), this.getMaxHP(), this.getMP());
 		con.typewriterNoLn(mess, 10);
 	}
 
@@ -238,23 +292,6 @@ public abstract class Player {
 				this.getName(), this.getBelongPartyName(), this.getAGI(), this.getHP(), this.getMP(), this.getSTR(),
 				this.getDEF());
 		con.typewriterNoLn(mess, 10);
-	}
-
-	/**
-	 * 状態異常確認と攻撃
-	 * @param defender
-	 */
-	public void action(Player defender, PartyManager partyManager) {
-		activePoison();
-		if (isDead()) {
-			con.typewriter(this.getName() + "は毒で死んでしまった");
-			return;
-		}
-		if (activeParalize()) {
-			con.typewriter(this.getName() + "は麻痺で体が動かない・・・");
-			return;
-		}
-		attack(defender, partyManager);
 	}
 
 	/**

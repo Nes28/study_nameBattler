@@ -16,10 +16,6 @@ public class PlayerGenerator {
 	Random rnd = new Random();
 	Scanner scanner = new Scanner(System.in);
 
-	public PlayerGenerator() {
-
-	}
-
 	public Player generatePlayer(int i) {
 		return generatePlayer(decidePlayerName(i), decideJobType(i));
 	}

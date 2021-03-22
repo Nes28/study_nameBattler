@@ -1,10 +1,10 @@
-package master.strategy;
+package master.strategy.targetSelector;
 
 import java.util.Random;
 
 import master.job.Player;
 import master.party.Party;
-public class DecideRandomTarget implements ITargetPicker {
+public class DecideRandomTarget implements ITargetSelector {
 	Random rnd = new Random();
 	public DecideRandomTarget() {
 		

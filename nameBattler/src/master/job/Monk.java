@@ -1,20 +1,27 @@
 package master.job;
 
+import master.config.JobType;
+import master.job.magic.MagicSet;
+import master.party.Party;
 import master.party.PartyManager;
-import master.util.Console;
-
-public class Monk extends Player {
+import master.strategy.ActionStrategy;
+import master.strategy.MagicAttackPriority;
+public class Monk extends Player implements IPlayerAction{
 	boolean isEndurance = false; //我慢状態
 	int endurancePoint = 0; //我慢値
 	int normalStr;
 
 	public Monk(String name) {
 		super(name);
-		Console con = new Console();
-		con.typewriter(String.format("%sはモンクです", name));
-		con.typewriter("---------------------------------");
 	}
-
+	@Override
+	protected void setJobType() {
+		jobType = JobType.MONK;
+	}
+	@Override
+	protected void setMagicSet() {
+		magicSet = new MagicSet(jobType);
+	}
 	/**
 	 * 名前からパラメーターを設定
 	 */
@@ -30,35 +37,11 @@ public class Monk extends Player {
 		this.agi = getNumber(5, 60) + 20; //20 ~ 80
 	}
 
-	/**
-	 * 対象プレイヤーに攻撃を行う
-	 * @param defender : 対象プレイヤー
-	 */
+	
 	@Override
-	public void attack(Player defender, PartyManager partyManager) {
-		if(!isEndurance) {
-			activeEndurance();
-			return;
-		}
-		powerUpStr();
-		// 与えるダメージを求める
-		con.typewriterNoLn(getName() + "の攻撃！", 20);
-		int damage = calcDamage(defender);
-
-		// 求めたダメージを対象プレイヤーに与える
-		if (damage > 0) {
-			con.typewriter(defender.getName() + "に" + damage + "のダメージ！");
-		} else {
-			con.typewriter("攻撃がミス");
-		}
-		defender.damage(damage);
-
-		// 倒れた判定
-		if (defender.isDead()) {
-			con.typewriter(defender.getName() + "は力尽きた...");
-		}
-
-		returnStrAndEndurance();
+	public void attack(Party enemyParty,PartyManager currentPartyManager) {
+		ActionStrategy actionStrategy = new MagicAttackPriority(enemyParty);
+		actionStrategy.decideAction(this, currentPartyManager);
 	}
 
 	/**
@@ -66,18 +49,13 @@ public class Monk extends Player {
 	 * @param damage : ダメージ値
 	 */
 	@Override
-	protected void damage(int damage) {
+	protected void receiveDamage(int damage) {
 		// ダメージ値分、HPを減少させる
 		this.hp = Math.max(this.getHP() - damage, 0);
 		if (this.isDead()) return;
 		if (isEndurance) {
 			chargeEndurance(damage);
 		}
-	}
-
-	private void activeEndurance() {
-		isEndurance = true;
-		con.typewriter(this.getName() + "は我慢状態に入った。次に受けるダメージを力に変える！");
 	}
 
 	/**
@@ -111,5 +89,23 @@ public class Monk extends Player {
 		this.endurancePoint = 0;
 		isEndurance = false;
 		con.typewriter(getName() + "の攻撃力と我慢値が元に戻った");
+	}
+	
+	@Override
+	public boolean normalAttack(Player enemy) {
+		if(!isEndurance) {
+			this.activeEndurance();
+			return true;
+		}
+		this.powerUpStr();
+		int damage = calcNormalAttackDamage(enemy);
+		dealDamage(enemy, damage);
+		this.returnStrAndEndurance();
+		return true;
+	}
+
+	private void activeEndurance() {
+		isEndurance = true;
+		con.typewriter(this.getName() + "は我慢状態に入った。次に受けるダメージを力に変える！");
 	}
 }

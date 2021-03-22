@@ -1,14 +1,25 @@
 package master.job;
 
+import master.config.JobType;
 import master.job.magic.CommonMagic;
+import master.job.magic.MagicSet;
+import master.party.Party;
 import master.party.PartyManager;
-public class Wizard extends Player {
+import master.strategy.ActionStrategy;
+import master.strategy.MagicAttackPriority;
+public class Wizard extends Player implements IPlayerAction{
 	CommonMagic commonMagic = new CommonMagic();
 
 	public Wizard(String name) {
 		super(name);
-		con.typewriter(String.format("%sは魔法使いです", name));
-		con.typewriter("---------------------------------");
+	}
+	@Override
+	protected void setJobType() {
+		jobType = JobType.WIZARD;
+	}
+	@Override
+	protected void setMagicSet() {
+		magicSet = new MagicSet(jobType);
 	}
 
 	/**
@@ -26,42 +37,37 @@ public class Wizard extends Player {
 	}
 
 	@Override
-	public void attack(Player defender, PartyManager partyManager) {
-		// 与えるダメージを求める
-		con.typewriterNoLn(getName() + "の攻撃！", 20);
-		int damage;
-		if (hasEnoughMP(10)) {
-			//魔法攻撃
-			damage = calcMagicDamage();
-		} else {
-			//通常攻撃
-			damage = calcDamage(defender);
-		}
-		// 求めたダメージを対象プレイヤーに与える
-		if (damage > 0) {
-			con.typewriter(defender.getName() + "に" + damage + "のダメージ！");
-		} else {
-			con.typewriter("攻撃がミス");
-		}
-		defender.damage(damage);
-
-		// 倒れた判定
-		if (defender.isDead()) {
-			con.typewriter(defender.getName() + "は力尽きた...");
-		}
+	public void attack(Party enemyParty,PartyManager currentPartyManager) {
+		ActionStrategy actionStrategy = new MagicAttackPriority(enemyParty);
+		actionStrategy.decideAction(this, currentPartyManager);
 	}
 
+	@Override
+	public boolean magicAttack(Player enemy) {
+		int damage = this.calcMagicDamage(enemy);
+		dealDamage(enemy, damage);
+		return true;
+	}
+	
 	/**
 	 * マジックダメージの算出
 	 * @return マジックダメージ
 	 */
-	private int calcMagicDamage() {
-		int magicNumber = rnd.nextInt(2);
+	private int calcMagicDamage(Player enemy) {
+		con.typewriterNoLn(getName() + "の魔法攻撃！");
+		//MP:~9
+		if(!hasEnoughMP(10)) {
+			con.typewriterNoLn("しかしMPが足りない・・・");
+			return calcNormalAttackDamage(enemy);
+		}
+		
 		//MP:10~19
 		if (!hasEnoughMP(20)) {
 			return commonMagic.useFire(this);
 		}
+		
 		//MP:20~
+		int magicNumber = rnd.nextInt(2);
 		if (hasEnoughMP(20)) {
 			if (magicNumber == 1) {
 				return commonMagic.useFire(this);
