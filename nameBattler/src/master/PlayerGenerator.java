@@ -13,7 +13,6 @@ import master.util.Console;
 
 public class PlayerGenerator {
 	Console con = new Console();
-	Random rnd = new Random();
 	Scanner scanner = new Scanner(System.in);
 
 	public Player generatePlayer(int i) {
@@ -71,7 +70,7 @@ public class PlayerGenerator {
 		System.out.println("1:戦士\n2:魔法使い\n3:僧侶\n4:モンク");
 		System.out.printf("プレイヤー%dの職業を数字で選んでください : \n", i);
 		con.typewriterNoLn("・・・・・・・・", 80);
-		int jobNumber = rnd.nextInt(4) + 1;
+		int jobNumber = new Random().nextInt(4) + 1;
 		//↓手動にする場合
 		//jobNumber = scanner.nextInt();
 		return JobType.getById(jobNumber);

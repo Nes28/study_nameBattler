@@ -2,6 +2,7 @@ package master.job;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import master.config.JobType;
 import master.job.magic.CommonMagic;
@@ -9,21 +10,25 @@ import master.job.magic.MagicSet;
 import master.party.Party;
 import master.party.PartyManager;
 import master.strategy.ActionStrategy;
-import master.strategy.DoVarious;
-public class Priest extends Player implements IPlayerAction{
+import master.strategy.TakeCareHp;
+
+public class Priest extends Player implements IPlayerAction {
 	CommonMagic commonMagic = new CommonMagic();
 
 	public Priest(String name) {
 		super(name);
 	}
+
 	@Override
 	protected void setJobType() {
 		jobType = JobType.PRIEST;
 	}
+
 	@Override
 	protected void setMagicSet() {
 		magicSet = new MagicSet(jobType);
 	}
+
 	/**
 	 * 名前からパラメーターを設定
 	 */
@@ -38,10 +43,9 @@ public class Priest extends Player implements IPlayerAction{
 		this.agi = getNumber(5, 40) + 20; //20 ~ 60
 	}
 
-	
 	@Override
-	public void attack(Party enemyParty,PartyManager currentPartyManager) {
-		ActionStrategy actionStrategy = new DoVarious(enemyParty);
+	public void attack(Party enemyParty, PartyManager currentPartyManager) {
+		ActionStrategy actionStrategy = new TakeCareHp(enemyParty);
 		actionStrategy.decideAction(this, currentPartyManager);
 	}
 
@@ -55,7 +59,6 @@ public class Priest extends Player implements IPlayerAction{
 		Collections.sort(myMembers, (p1, p2) -> p1.getHP() - p2.getHP());
 		return myMembers.get(0);
 	}
-	
 
 	@Override
 	public boolean healAction(PartyManager currentPartyManager) {
@@ -65,20 +68,40 @@ public class Priest extends Player implements IPlayerAction{
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean debuffAction(Player enemy) {
-		//相手が麻痺していなかったら
-		if (!enemy.isParalize && hasEnoughMP(10)) {
+		if (!hasEnoughMP(10)) {
+			return false;
+		}
+
+		boolean isParalize = enemy.getParalizeState();
+		boolean isPoison = enemy.getPoisonState();
+
+		if (isParalize && isPoison) {
+			return false;
+		}
+
+		if (isParalize && !isPoison) {
+			commonMagic.usePoison(this, enemy);
+			return true;
+		}
+
+		if (!isParalize && isPoison) {
 			commonMagic.useParalize(this, enemy);
 			return true;
 		}
 
-		//相手が毒じゃなかったら
-		if (!enemy.isPoison && hasEnoughMP(10)) {
-			commonMagic.usePoison(this, enemy);
+		if (!isParalize && !isPoison) {
+			int rate = new Random().nextInt(100);
+			if (rate < 50) {
+				commonMagic.useParalize(this, enemy);
+			} else {
+				commonMagic.usePoison(this, enemy);
+			}
 			return true;
 		}
+
 		return false;
 	}
 

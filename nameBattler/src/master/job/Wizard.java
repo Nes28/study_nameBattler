@@ -6,7 +6,7 @@ import master.job.magic.MagicSet;
 import master.party.Party;
 import master.party.PartyManager;
 import master.strategy.ActionStrategy;
-import master.strategy.MagicAttackPriority;
+import master.strategy.MagicPriority;
 public class Wizard extends Player implements IPlayerAction{
 	CommonMagic commonMagic = new CommonMagic();
 
@@ -38,7 +38,7 @@ public class Wizard extends Player implements IPlayerAction{
 
 	@Override
 	public void attack(Party enemyParty,PartyManager currentPartyManager) {
-		ActionStrategy actionStrategy = new MagicAttackPriority(enemyParty);
+		ActionStrategy actionStrategy = new MagicPriority(enemyParty);
 		actionStrategy.decideAction(this, currentPartyManager);
 	}
 

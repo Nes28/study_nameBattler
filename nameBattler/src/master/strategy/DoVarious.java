@@ -7,15 +7,14 @@ import java.util.Random;
 import master.job.Player;
 import master.party.Party;
 import master.party.PartyManager;
-import master.strategy.targetSelector.DecideLowHpTarget;
+import master.strategy.targetSelector.DecideRandomTarget;
 import master.strategy.targetSelector.ITargetSelector;
 
 /**
  * いろいろやろうぜ
  */
 public class DoVarious extends ActionStrategy {
-	List<String> actionList;
-	Random rnd = new Random();
+	private List<String> actionList;
 
 	public DoVarious(Party enemyParty) {
 		super(enemyParty);
@@ -23,13 +22,20 @@ public class DoVarious extends ActionStrategy {
 
 	@Override
 	public void decideAction(Player me, PartyManager currentPartyManager) {
+		Player enemy = this.decideTargetPlayer();
 		this.setupActionList(me);
-		this.doRandomAction(me, currentPartyManager);
+		this.doRandomAction(enemy , me, currentPartyManager);
+	}
+	
+	public void decideAction(Player enemy, Player me, PartyManager currentPartyManager) {
+		this.setupActionList(me);
+		this.doRandomAction(enemy, me, currentPartyManager);
 	}
 
+	//ランダムターゲット
 	@Override
 	public Player decideTargetPlayer() {
-		ITargetSelector targetSelector = new DecideLowHpTarget();
+		ITargetSelector targetSelector = new DecideRandomTarget();
 		Player targetPlayer = targetSelector.decideTargetPlayer(enemyParty);
 		return targetPlayer;
 	}
@@ -43,20 +49,19 @@ public class DoVarious extends ActionStrategy {
 	/**
 	 * 行動可能なアクションをランダムに行う
 	 */
-	private void doRandomAction(Player me, PartyManager currentPartyManager) {
+	private void doRandomAction(Player enemy, Player me, PartyManager currentPartyManager) {
 		while(true) {
-			int actionIndex = rnd.nextInt(actionList.size());
+			int actionIndex = new Random().nextInt(actionList.size());
 			String actionAttribute = actionList.get(actionIndex);
 			actionList.remove(actionIndex);
 			boolean doneAction = false;
-			doneAction = this.selectedAction(actionAttribute, me, currentPartyManager);
+			doneAction = this.selectedAction(actionAttribute, enemy, me, currentPartyManager);
 			if(doneAction) break;
 		}
 	}
 
-	private boolean selectedAction(String attribute, Player me, PartyManager currentPartyManager) {
+	private boolean selectedAction(String attribute, Player enemy, Player me, PartyManager currentPartyManager) {
 		boolean doneAction = false;
-		Player enemy = this.decideTargetPlayer();
 		switch (attribute) {
 		case "通常攻撃":
 			return doneAction = me.normalAttack(enemy);

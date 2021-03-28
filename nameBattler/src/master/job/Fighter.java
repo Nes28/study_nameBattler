@@ -5,7 +5,7 @@ import master.job.magic.MagicSet;
 import master.party.Party;
 import master.party.PartyManager;
 import master.strategy.ActionStrategy;
-import master.strategy.MagicAttackPriority;
+import master.strategy.LowHpEnemyPriority;
 // プレイヤー：戦士
 public class Fighter extends Player{
 
@@ -38,7 +38,7 @@ public class Fighter extends Player{
 
 	@Override
 	public void attack(Party enemyParty,PartyManager currentPartyManager) {
-		ActionStrategy actionStrategy = new MagicAttackPriority(enemyParty);
+		ActionStrategy actionStrategy = new LowHpEnemyPriority(enemyParty);
 		actionStrategy.decideAction(this, currentPartyManager);
 	}
 

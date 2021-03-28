@@ -5,7 +5,7 @@ import master.job.magic.MagicSet;
 import master.party.Party;
 import master.party.PartyManager;
 import master.strategy.ActionStrategy;
-import master.strategy.MagicAttackPriority;
+import master.strategy.DoVarious;
 public class Monk extends Player implements IPlayerAction{
 	boolean isEndurance = false; //我慢状態
 	int endurancePoint = 0; //我慢値
@@ -40,17 +40,12 @@ public class Monk extends Player implements IPlayerAction{
 	
 	@Override
 	public void attack(Party enemyParty,PartyManager currentPartyManager) {
-		ActionStrategy actionStrategy = new MagicAttackPriority(enemyParty);
+		ActionStrategy actionStrategy = new DoVarious(enemyParty);
 		actionStrategy.decideAction(this, currentPartyManager);
 	}
 
-	/**
-	 * ダメージを受ける
-	 * @param damage : ダメージ値
-	 */
 	@Override
 	protected void receiveDamage(int damage) {
-		// ダメージ値分、HPを減少させる
 		this.hp = Math.max(this.getHP() - damage, 0);
 		if (this.isDead()) return;
 		if (isEndurance) {

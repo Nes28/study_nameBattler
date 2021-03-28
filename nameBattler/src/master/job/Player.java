@@ -12,6 +12,7 @@ import master.job.magic.MagicSet;
 import master.party.Party;
 import master.party.PartyManager;
 import master.util.Console;
+
 // プレイヤークラス(各種ジョブの基底クラス)
 public abstract class Player implements IPlayerAction {
 	Console con = new Console();
@@ -24,10 +25,10 @@ public abstract class Player implements IPlayerAction {
 	protected int def; // 防御力
 	protected int luck; //運
 	protected int agi; //素早さ
-	boolean isParalize = false; //麻痺状態
-	boolean isPoison = false; //毒状態
+	boolean paralizeState = false; //麻痺状態
+	boolean poisonState = false; //毒状態
 	public String belongPartyName; //所属パーティー名
-	
+
 	protected JobType jobType;
 	protected MagicSet magicSet;
 
@@ -74,15 +75,23 @@ public abstract class Player implements IPlayerAction {
 	public int getAGI() {
 		return this.agi;
 	}
-	
+
+	public boolean getParalizeState() {
+		return this.paralizeState;
+	}
+
+	public boolean getPoisonState() {
+		return this.poisonState;
+	}
+
 	public JobType getJobType() {
 		return this.jobType;
 	}
-	
+
 	public MagicSet getMagicSet() {
 		return this.magicSet;
 	}
-	
+
 	public Set getMagicAttributes() {
 		return this.magicSet.getMagicAttributes();
 	}
@@ -103,9 +112,19 @@ public abstract class Player implements IPlayerAction {
 	public void setBelongPartyName(String partyName) {
 		this.belongPartyName = partyName;
 	}
-	
+
+	public void becomeParalize() {
+		this.paralizeState = true;
+	}
+
+	public void becomePoison() {
+		this.poisonState = true;
+	}
+
 	protected abstract void setJobType();
+
 	protected abstract void setMagicSet();
+
 	/**
 	 * 名前(name)からキャラクターに必要なパラメータを生成する
 	 */
@@ -169,7 +188,7 @@ public abstract class Player implements IPlayerAction {
 	public boolean healAction(PartyManager currentPartyManager) {
 		return false;
 	}
-	
+
 	public boolean debuffAction(Player enemy) {
 		return false;
 	}
@@ -225,7 +244,6 @@ public abstract class Player implements IPlayerAction {
 		}
 	}
 
-	
 	/**
 	 * 必要なMPがあるかの判定
 	 * @param necessaryMP
@@ -254,10 +272,11 @@ public abstract class Player implements IPlayerAction {
 	 * @return true : 麻痺発動  false : 不発
 	 */
 	private boolean activeParalize() {
-		if (!isParalize)
+		if (!paralizeState) {
 			return false;
-		int kakuritsu = rnd.nextInt(100); //0~99
-		if (kakuritsu < 20) {
+		}
+		int rate = rnd.nextInt(100); //0~99
+		if (rate < 20) {
 			return true;
 		}
 		return false;
@@ -267,20 +286,15 @@ public abstract class Player implements IPlayerAction {
 	 * 毒ダメージ
 	 */
 	private void activePoison() {
-		if (!isPoison)
+		if (!poisonState) {
 			return;
-		final int poisonDamage = 20;
-		this.hp -= poisonDamage;
-		if (this.hp < 0) {
-			this.hp = 0;
 		}
-		String mess = String.format("%sは毒でダメージを受けた(HP : %d)", this.getName(), this.hp);
+		String mess = String.format("%sは毒でダメージを受けた", this.getName());
 		con.typewriter(mess);
+		final int poisonDamage = 20;
+		this.receiveDamage(poisonDamage);
 	}
 
-	/**
-	 * 現在のステータスを System.out で表示する
-	 */
 	public void PrintStatus() {
 		String mess = String.format("%s (HP=%3d/%3d MP=%3d )\n",
 				this.getName(), this.getHP(), this.getMaxHP(), this.getMP());
@@ -320,17 +334,5 @@ public abstract class Player implements IPlayerAction {
 		}
 	}
 
-	/**
-	 * 麻痺状態になる
-	 */
-	public void becomeParalize() {
-		this.isParalize = true;
-	}
 
-	/**
-	 * 毒状態になる
-	 */
-	public void becomePoison() {
-		this.isPoison = true;
-	}
 }
